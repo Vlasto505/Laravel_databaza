@@ -9,12 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
+    public function up(): void {
         Schema::create('categories', function (Blueprint $table) {
-            $table->id(); // Vytvorí BIGINT UNSIGNED AUTO_INCREMENT PK
-            $table->string('name', 64)->unique(); // Názov kategórie, max 64 znakov, unikátny
-            $table->timestamps(); // Vytvorí created_at a updated_at
+            $table->id();
+            $table->string('name', 64)->unique();
+            $table->string('color', 16)->default('#808080');
+            $table->timestamps();
         });
     }
 
