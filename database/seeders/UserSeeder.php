@@ -24,16 +24,15 @@ class UserSeeder extends Seeder
                 'updated_at' => now(),
             ], // Chýbala čiarka medzi poliami
             [
-                'first_name' => 'Milan', // Chýbala uzatváracia úvodzovka
-                'last_name' => 'Jokovic', // Chýbala uzatváracia úvodzovka
-                'email' => 'milan.jokovic@student.ukf.sk', // E-mail musí byť unikátny!
+                'first_name' => 'Milan',
+                'last_name' => 'Jokovic',
+                'email' => 'milan.jokovic@student.ukf.sk',
                 'password' => Hash::make('456'),
                 'role' => 'user',
                 'premium_until' => now()->addDays(30),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-            // Doplnení ďalší 3 používatelia, aby ich bolo spolu 5 (podľa úlohy)
             [
                 'first_name' => 'Anna',
                 'last_name' => 'Veselá',

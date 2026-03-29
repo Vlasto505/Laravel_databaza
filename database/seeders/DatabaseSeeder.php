@@ -15,13 +15,24 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database.
      */
     public function run(): void {
-        Category::factory()->count(10)->create();
-
         $this->call([
             UserSeeder::class,
-            //CategorySeeder::class,
-            NoteSeeder::class,
-            NoteCategorySeeder::class,
         ]);
+        $categories = Category::factory(10)->create();
+        $users = User::all();
+        foreach ($users as $user) {
+            $user->notes()->createMany(
+                \App\Models\Note::factory(5)->make()->toArray()
+            );
+        }
+        $notes = \App\Models\Note::all();
+        foreach ($notes as $note) {
+            $note->categories()->attach(
+                $categories->random(rand(1, 3))->pluck('id')->all()
+            );
+            $note->tasks()->createMany(
+                \App\Models\Task::factory(rand(2, 6))->make()->toArray()
+            );
+        }
     }
 }

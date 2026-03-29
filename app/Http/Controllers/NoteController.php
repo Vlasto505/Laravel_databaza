@@ -5,15 +5,20 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Note;
+use function Laravel\Prompts\select;
+
 class NoteController extends Controller
 {
     public function index() {
-        //$notes = DB::table('notes')
-          //  ->whereNull('deleted_at')
-            //->orderBy('updated_at', 'desc')
-            //->get();
         $notes = Note::query()
-            ->orderByDesc('updated_at')
+        ->select('id', 'user_id', 'title', 'body', 'status', 'is_pinned', 'created_at')
+        ->with([
+            // overit ci je categories alebo category
+            'user:id, first_name, last_name',
+            'categories:id, id, name, color',
+        ])
+            ->orderByDesc('is_pinned')
+            ->orderByDesc('created_at')
             ->get();
         return response()->json(['notes' => $notes], Response::HTTP_OK);
     }
@@ -34,20 +39,27 @@ class NoteController extends Controller
             'message' => 'Poznámka bola úspešne vytvorená.'
         ], Response::HTTP_CREATED);
     }
-    public function show(string $id) {
-        //$note = DB::table('notes')
-          //  ->whereNull('deleted_at')
-            //->where('id', $id)
-            //->first();
-        $note = Note::find($id);
+    public function show(string $id)
+    {
+        $note = \App\Models\Note::with([
+            'user',
+            'categories',
+            'tasks.comments', // komentáre k úlohám
+            'comments'        // komentáre k samotnej poznámke
+        ])->find($id);
+
         if (!$note) {
             return response()->json([
-                'message' => 'Poznámka nenájdená.'
-            ], Response::HTTP_NOT_FOUND);
+                'message' => 'Poznámka sa nenašla.'
+            ], \Illuminate\Http\Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json(['note' => $note], Response::HTTP_OK);
+        // Úspešná odpoveď s dátami
+        return response()->json([
+            'note' => $note
+        ], \Illuminate\Http\Response::HTTP_OK);
     }
+
     public function update(Request $request, string $id) {
         //$note = DB::table('notes')->where('id', $id)->first();
         $note = Note::find($id);
